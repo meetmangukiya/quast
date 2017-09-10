@@ -1,3 +1,4 @@
 # all the files under bin folder should be ignored
 bin/
 **.orig
+**.class

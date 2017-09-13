@@ -32,10 +32,12 @@ CREATE TABLE tags (
 
 CREATE TABLE followers (
     followed_by text REFERENCES users(username),
-    following_to text REFERENCES users(username)
+    following_to text REFERENCES users(username),
+    PRIMARY KEY (followed_by, following_to)
 );
 
 CREATE TABLE question_tags (
     qid int REFERENCES questions(qid),
-    tag text REFERENCES tags(name)
+    tag text REFERENCES tags(name),
+    PRIMARY KEY (qid, tag)
 );

@@ -43,6 +43,39 @@ public class Question {
         }
     }
 
+    /**
+     * Create a new question.
+     */
+    public Question(String title, String description, User author) {
+        try {
+            this.title = title;
+            this.body = description;
+            this.author = author;
+            this.upvotes = this.downvotes = 0;
+
+            Helper db = new Helper();
+
+            int status = db.update(
+                String.format("INSERT INTO questions (title, description, " +
+                    "author) VALUES (" +
+                    "'%s', '%s', '%s')",
+                    title, description, author)
+            );
+
+            ResultSet rs = db.retrieve(
+                String.format("SELECT qid FROM questions WHERE title='%s' AND " +
+                    "author='%s'",
+                    title, author)
+            );
+            rs.next();
+            this.qid = rs.getInt(1);
+        }
+        catch(SQLException ex) {
+            System.out.println("Exception: " + ex);
+            ex.printStackTrace();
+        }
+    }
+
     public void upvote() {}
 
     public void downvote() {}

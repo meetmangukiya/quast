@@ -41,3 +41,23 @@ CREATE TABLE question_tags (
     tag text REFERENCES tags(name),
     PRIMARY KEY (qid, tag)
 );
+
+CREATE TABLE question_comments (
+    qid int REFERENCES questions(qid),
+    body text,
+    author text REFERENCES users(username),
+    upvotes int,
+    downvotes int,
+    PRIMARY KEY (qid, body)
+);
+
+CREATE TABLE answer_comments (
+    qid int,
+    aid int,
+    FOREIGN  KEY(qid, aid) REFERENCES answers(qid, aid),
+    body text,
+    author text REFERENCES users(username),
+    upvotes int,
+    downvotes int,
+    PRIMARY KEY (qid, aid, body)
+);

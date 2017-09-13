@@ -3,6 +3,7 @@ package quast.models;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import quast.db.Helper;
 import quast.models.User;
 
 /**
@@ -21,20 +22,20 @@ public class Answer{
      * @param aid Answer ID
      */
     public Answer(int qid, int aid) {
-        qid = qid;
-        aid = aid;
+        this.qid = qid;
+        this.aid = aid;
         Helper db = new Helper();
         try {
             ResultSet rs = db.retrieve(String.format(
-                "SELECT author, body, upvotes, downvotes FROM answers" +
-                "WHERE qid=%d AND aid=%d"
-                ),
+                "SELECT author, body, upvotes, downvotes FROM answers " +
+                "WHERE qid=%d AND aid=%d",
                 qid, aid
-            );
-            author = rs.getString(1);
-            body = rs.getString(2);
-            upvotes = rs.getInt(3);
-            downvotes = rs.getInt(4);
+            ));
+            rs.next();
+            this.author = new User(rs.getString(1));
+            this.body = rs.getString(2);
+            this.upvotes = rs.getInt(3);
+            this.downvotes = rs.getInt(4);
         }
         catch (SQLException ex) {
             System.out.println("Exception: " + ex);

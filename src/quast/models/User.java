@@ -18,14 +18,15 @@ public class User {
      * @param username
      */
     public User(String username) {
-        username = username;
+        this.username = username;
         Helper db = new Helper();
         try {
             ResultSet rs = db.retrieve(String.format(
-                            "SELECT credits, bio FROM users WHERE username=%s",
-                            username));
-            credits = rs.getInt(1);
-            bio = rs.getString(2);
+                            "SELECT credits, bio FROM users WHERE username='%s'",
+                            this.username));
+            rs.next();
+            this.credits = rs.getInt(1);
+            this.bio = rs.getString(2);
         }
         catch (SQLException ex) {
             System.out.println("Exception: " + ex);

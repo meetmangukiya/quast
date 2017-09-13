@@ -24,18 +24,18 @@ public class Question {
      * @param qid Question ID
      */
     public Question(int qid) {
-        qid = qid;
+        this.qid = qid;
         Helper db = new Helper();
         try {
             ResultSet rs = db.retrieve(String.format(
                 "SELECT author, title, body, upvotes, downvotes " +
                 "FROM questions WHERE question=%d",
                 qid));
-            author = rs.getString(1);
-            title = rs.getString(2);
-            body = rs.getString(3);
-            upvotes = rs.getInt(4);
-            downvotes = rs.getInt(5);
+            this.author = new User(rs.getString(1));
+            this.title = rs.getString(2);
+            this.body = rs.getString(3);
+            this.upvotes = rs.getInt(4);
+            this.downvotes = rs.getInt(5);
         }
         catch (SQLException ex) {
             System.out.println("Exception: " + ex);

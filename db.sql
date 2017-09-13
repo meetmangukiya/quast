@@ -1,6 +1,7 @@
 CREATE TABLE users (
     username text,
     bio text,
+    credits int,
     PRIMARY KEY (username)
 );
 

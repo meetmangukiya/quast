@@ -12,7 +12,8 @@ CREATE TABLE questions (
     upvotes int,
     downvotes int,
     qid SERIAL,
-    PRIMARY KEY (qid)
+    PRIMARY KEY (qid),
+    UNIQUE (title, author)
 );
 
 CREATE TABLE answers (

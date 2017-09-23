@@ -16,14 +16,14 @@ class Question:
         self._author = author
         self._title = title
         self._body = body
-        self._upvotes = upvotes
-        self._downvotes = downvotes
+        self._upvotes = upvotes if upvotes else 0
+        self._downvotes = downvotes if downvotes else 0
 
     @staticmethod
     def from_qid(qid: int,
                  conn: connection):
         with conn.cursor() as curs:
-            curs.execute("SELECT author, title, body, upvotes, downvotes "
+            curs.execute("SELECT author, title, description, upvotes, downvotes "
                          "FROM questions "
                          "WHERE qid=%s", (qid, ))
             author, title, body, upvotes, downvotes = curs.fetchone()

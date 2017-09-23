@@ -8,7 +8,7 @@ class Comment:
     def __init__(self,
                  author: User,
                  upvotes: int,
-                 downvotes: int
+                 downvotes: int,
                  body: str):
         self._author = author
         self._upvotes = upvotes
@@ -37,7 +37,7 @@ class AnswerComment(Comment):
 
     def __init__(self,
                  author: User,
-                 upvotes: int
+                 upvotes: int,
                  downvotes: int,
                  body: str,
                  qid: int,

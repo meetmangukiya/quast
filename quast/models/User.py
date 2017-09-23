@@ -1,6 +1,8 @@
 from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 
+from quast.models.Question import Question
+
 class User:
     """
     Class representing a User.
@@ -46,3 +48,20 @@ class User:
             'credits': self._credits,
             'bio': self._bio
         }
+
+    def get_questions(self):
+        """
+        Return a list of ``quast.models.Question`` objects representing
+        questions asked by user ``username``.
+        """
+        conn = self._pool.getconn()
+        questions = []
+        with conn.cursor() as curs:
+            curs.execute("SELECT title, description, upvotes, downvotes, qid "
+                         "FROM questions WHERE author=%s", (self._username, ))
+            for title, body, upvotes, downvotes, qid in curs.fetchmany():
+                questions.append(Question(title=title, body=body,
+                                          upvotes=upvotes, downvotes=downvotes,
+                                          qid=qid, author=self._username))
+        self._pool.putconn(conn)
+        return questions

@@ -1,34 +1,33 @@
 CREATE TABLE users (
     username text,
-    bio text,
-    credits int,
+    bio text DEFAULT '',
+    credits int DEFAULT 0,
     PRIMARY KEY (username)
 );
 
 CREATE TABLE questions (
     title text,
-    description text,
+    description text DEFAULT '',
     author text REFERENCES users(username),
-    upvotes int,
-    downvotes int,
+    upvotes int DEFAULT 0,
+    downvotes int DEFAULT 0,
     qid SERIAL,
     PRIMARY KEY (qid),
     UNIQUE (title, author)
 );
 
 CREATE TABLE answers (
-    body text,
+    body text NOT NULL,
     author text REFERENCES users(username),
     qid int REFERENCES questions(qid),
-    aid int,
-    upvotes int,
-    downvotes int,
-    PRIMARY KEY (qid, aid)
+    upvotes int DEFAULT 0,
+    downvotes int DEFAULT 0,
+    PRIMARY KEY (qid, author),
 );
 
 CREATE TABLE tags (
     name text,
-    description text,
+    description text DEFAULT '',
     PRIMARY KEY (name)
 );
 
@@ -46,20 +45,20 @@ CREATE TABLE question_tags (
 
 CREATE TABLE question_comments (
     qid int REFERENCES questions(qid),
-    body text,
+    body text NOT NULL,
     author text REFERENCES users(username),
-    upvotes int,
-    downvotes int,
+    upvotes int DEFAULT 0,
+    downvotes int DEFAULT 0,
     PRIMARY KEY (qid, body)
 );
 
 CREATE TABLE answer_comments (
     qid int,
-    aid int,
-    FOREIGN  KEY(qid, aid) REFERENCES answers(qid, aid),
-    body text,
+    answer_author text,
+    FOREIGN  KEY(qid, answer_author) REFERENCES answers(qid, author),
+    body text NOT NULL,
     author text REFERENCES users(username),
-    upvotes int,
-    downvotes int,
-    PRIMARY KEY (qid, aid, body)
+    upvotes int DEFAULT 0,
+    downvotes int DEFAULT 0,
+    PRIMARY KEY (qid, answer_author, body)
 );

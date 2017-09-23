@@ -26,7 +26,7 @@ class Answer:
                         pool: ThreadedConnectionPool=None):
         conn = pool.getconn()
         with conn.cursor() as curs:
-            curs.execute("SELECT body, upvotes, downvotes, "
+            curs.execute("SELECT body, upvotes, downvotes "
                          "FROM answers "
                          "WHERE author=%(username)s AND qid=%(qid)s",
                          {'username': author, 'qid': qid})

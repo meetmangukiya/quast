@@ -2,7 +2,6 @@ from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 
 from quast.models.Answer import Answer
-from quast.models.User import User
 
 class Question:
     """
@@ -15,6 +14,7 @@ class Question:
                  body: str=None,
                  upvotes: int=0,
                  downvotes: int=0,
+                 qid: int=None,
                  pool: ThreadedConnectionPool=None):
         self._author = author
         self._title = title
@@ -22,6 +22,7 @@ class Question:
         self._upvotes = upvotes if upvotes else 0
         self._downvotes = downvotes if downvotes else 0
         self._pool = pool
+        self._qid = qid
 
     @staticmethod
     def from_qid(qid: int,
@@ -34,7 +35,7 @@ class Question:
             author, title, body, upvotes, downvotes = curs.fetchone()
         pool.putconn(conn)
         return Question(author=author, title=title, body=body, upvotes=upvotes,
-                        downvotes=downvotes, pool=pool)
+                        downvotes=downvotes, qid=qid, pool=pool)
 
     def answers(self):
         """
@@ -44,10 +45,10 @@ class Question:
         answers = []
         with conn.cursor() as curs:
             curs.execute("SELECT author, body, upvotes, downvotes FROM answers "
-                         "WHERE qid=%s", (qid, ))
-            for author, body, upvotes, downvotes in curs.fetchone():
+                         "WHERE qid=%s", (self._qid, ))
+            for author, body, upvotes, downvotes in curs:
                 answers.append(Answer(author=author, body=body, upvotes=upvotes,
-                                      downvotes=downvotes, qid=qid,
+                                      downvotes=downvotes, qid=self._qid,
                                       pool=self._pool))
         self._pool.putconn(conn)
         return answers
@@ -58,5 +59,6 @@ class Question:
             'title': self._title,
             'description': self._body,
             'upvotes': self._upvotes,
-            'downvotes': self._downvotes
+            'downvotes': self._downvotes,
+            'qid': self._qid
         }

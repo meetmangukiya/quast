@@ -1,3 +1,5 @@
+from typing import List
+
 from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 
@@ -15,6 +17,7 @@ class Question:
                  upvotes: int=0,
                  downvotes: int=0,
                  qid: int=None,
+                 tags: List[str]= None,
                  pool: ThreadedConnectionPool=None):
         self._author = author
         self._title = title
@@ -23,6 +26,7 @@ class Question:
         self._downvotes = downvotes if downvotes else 0
         self._pool = pool
         self._qid = qid
+        self._tags = tags
 
     @staticmethod
     def from_qid(qid: int,
@@ -33,9 +37,11 @@ class Question:
                          "FROM questions "
                          "WHERE qid=%s", (qid, ))
             author, title, body, upvotes, downvotes = curs.fetchone()
+            curs.execute("SELECT tag FROM question_tags WHERE qid=%s", (qid, ))
+            tags = [res[0] for res in curs]
         pool.putconn(conn)
         return Question(author=author, title=title, body=body, upvotes=upvotes,
-                        downvotes=downvotes, qid=qid, pool=pool)
+                        downvotes=downvotes, qid=qid, pool=pool, tags=tags)
 
     def answers(self):
         """
@@ -60,5 +66,6 @@ class Question:
             'description': self._body,
             'upvotes': self._upvotes,
             'downvotes': self._downvotes,
-            'qid': self._qid
+            'qid': self._qid,
+            'tags': self._tags
         }

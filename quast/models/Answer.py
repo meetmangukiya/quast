@@ -1,15 +1,13 @@
 from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 
-from quast.models.User import User
-
 class Answer:
     """
     Class representing an Answer.
     """
 
     def __init__(self,
-                 author: User,
+                 author: str,
                  body: str,
                  upvotes: int,
                  downvotes: int,
@@ -24,14 +22,14 @@ class Answer:
 
     @staticmethod
     def from_qid_author(qid: int,
-                        author: User,
+                        author: str,
                         pool: ThreadedConnectionPool=None):
         conn = pool.getconn()
         with conn.cursor() as curs:
             curs.execute("SELECT body, upvotes, downvotes, "
                          "FROM answers "
                          "WHERE author=%(username)s AND qid=%(qid)s",
-                         {'username': User.username, 'qid': qid})
+                         {'username': author, 'qid': qid})
             body, upvotes, downvotes = curs.fetchone()
         pool.putconn(conn)
         return Answer(author=author, body=body, upvotes=upvotes,

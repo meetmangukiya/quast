@@ -36,3 +36,12 @@ class Answer:
         pool.putconn(conn)
         return Answer(author=author, body=body, upvotes=upvotes,
                       downvotes=downvotes, qid=qid, pool=pool)
+
+    def as_dict(self):
+        return {
+            'author': self._author,
+            'body': self._body,
+            'upvotes': self._upvotes,
+            'downvotes': self._downvotes,
+            'qid': self._qid
+        }

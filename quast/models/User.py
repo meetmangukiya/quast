@@ -34,8 +34,15 @@ class User:
         """
         conn = self._pool.getconn()
         with conn.cursor() as curs:
-            curs.execute("SELECT followed_by FROM users "
+            curs.execute("SELECT followed_by FROM followers "
                          "WHERE following_to=%s", (self._username, ))
             followers = list(map(lambda x: x[0], curs.fetchall()))
         self._pool.putconn(conn)
         return followers
+
+    def as_dict(self):
+        return {
+            'username': self._username,
+            'credits': self._credits,
+            'bio': self._bio
+        }

@@ -10,7 +10,7 @@ class Question:
     """
 
     def __init__(self,
-                 author: User=None,
+                 author: str=None,
                  title: str=None,
                  body: str=None,
                  upvotes: int=0,
@@ -46,8 +46,17 @@ class Question:
             curs.execute("SELECT author, body, upvotes, downvotes FROM answers "
                          "WHERE qid=%s", (qid, ))
             for author, body, upvotes, downvotes in curs.fetchone():
-                answers.append(Answer(author=author, body=body, upvotes=upvotes
+                answers.append(Answer(author=author, body=body, upvotes=upvotes,
                                       downvotes=downvotes, qid=qid,
                                       pool=self._pool))
         self._pool.putconn(conn)
         return answers
+
+    def as_dict(self):
+        return {
+            'author': self._author,
+            'title': self._title,
+            'description': self._body,
+            'upvotes': self._upvotes,
+            'downvotes': self._downvotes
+        }

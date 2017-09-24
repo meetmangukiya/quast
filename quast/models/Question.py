@@ -43,6 +43,27 @@ class Question:
         return Question(author=author, title=title, body=body, upvotes=upvotes,
                         downvotes=downvotes, qid=qid, pool=pool, tags=tags)
 
+    @staticmethod
+    def create(author, title, body, tags, pool):
+        """
+        Create a new question, store it in DB.
+        """
+        conn = pool.getconn()
+        with conn.cursor() as curs:
+            curs.execute("INSERT INTO questions(author, title, description) "
+                         "VALUES(%(author)s, %(title)s, %(body)s)",
+                         {'author': author, 'title': title, 'body': body})
+            conn.commit()
+            curs.execute("SELECT qid FROM questions WHERE author=%s AND title=%s ",
+                         (author, title))
+            (qid, ) = curs.fetchone()
+            for tag in tags:
+                curs.execute("INSERT INTO question_tags(tag, qid) VALUES(%s, %s) ",
+                             (tag, qid))
+            conn.commit()
+        pool.putconn(conn)
+        return Question(title=title, body=body, tags=tags, pool=pool, qid=qid)
+
     def answers(self):
         """
         Return a list of ``quast.models.Answer`` object.

@@ -64,6 +64,16 @@ def user_questions(username):
     user = User.from_username(username, POOL)
     return jsonify(list(map(lambda x: x.as_dict(), user.get_questions())))
 
+@app.route("/tag/<name>/questions", methods=['GET'])
+def tags_questions(name):
+    """
+    Return list of questions tagged ``name``.
+    """
+    tag = Tag.from_name(name, pool=POOL)
+    questions = tag.questions()
+    data = tag.as_dict()
+    data['questions'] = list(map(lambda x: x.as_dict(), questions))
+    return jsonify(data)
 
 # ACCOUNT & SESSION MANAGEMENT
 # ============================

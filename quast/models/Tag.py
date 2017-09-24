@@ -1,5 +1,8 @@
 from psycopg2.pool import ThreadedConnectionPool
 
+from quast.models.Question import Question
+
+
 class Tag:
     """
     Class representing a tag.
@@ -14,7 +17,7 @@ class Tag:
     def from_name(name: str, pool: ThreadedConnectionPool):
         connection = pool.getconn()
         with connection.cursor() as curs:
-            curs.execute("SELECT description WHERE name=%s", (name, ))
+            curs.execute("SELECT description FROM tags WHERE name=%s", (name, ))
             (description, ) = curs.fetchone()
         pool.putconn(connection)
         return Tag(name=name, description=description, pool=pool)
@@ -31,6 +34,21 @@ class Tag:
         conn.commit()
         pool.putconn(conn)
         return Tag(name=name, description=description, pool=pool)
+
+    def questions(self):
+        """
+        Returns questions that are tagged with this tag.
+        """
+        conn = self._pool.getconn()
+        with conn.cursor() as curs:
+            curs.execute("SELECT qid FROM question_tags WHERE tag=%s",
+                         (self._name, ))
+            questions = []
+            for qid in curs:
+                questions.append(Question.from_qid(qid=qid, pool=self._pool))
+        self._pool.putconn(conn)
+
+        return questions
 
     def as_dict(self):
         return {

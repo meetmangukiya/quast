@@ -110,5 +110,21 @@ def register_new_user():
     POOL.putconn(conn)
     return jsonify({"status": "success"})
 
+# POST Requests
+
+@app.route("/question", methods=['POST'])
+@login_required
+def create_question():
+    """
+    Create a new question.
+    """
+    author = session['username']
+    title = request.json.get('title')
+    body = request.json.get('body')
+    tags = request.json.get('tags')
+    question = Question.create(author=author, title=title, body=body, tags=tags,
+                               pool=POOL)
+    return jsonify(question.as_dict())
+
 if __name__ == '__main__':
     app.run(debug=True)

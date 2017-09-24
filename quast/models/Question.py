@@ -1,9 +1,9 @@
 from typing import List
 
-from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 
 from quast.models.Answer import Answer
+
 
 class Question:
     """
@@ -11,14 +11,14 @@ class Question:
     """
 
     def __init__(self,
-                 author: str=None,
-                 title: str=None,
-                 body: str=None,
-                 upvotes: int=0,
-                 downvotes: int=0,
-                 qid: int=None,
-                 tags: List[str]= None,
-                 pool: ThreadedConnectionPool=None):
+                 author: str = None,
+                 title: str = None,
+                 body: str = None,
+                 upvotes: int = 0,
+                 downvotes: int = 0,
+                 qid: int = None,
+                 tags: List[str] = None,
+                 pool: ThreadedConnectionPool = None) -> (None):
         self._author = author
         self._title = title
         self._body = body
@@ -31,6 +31,9 @@ class Question:
     @staticmethod
     def from_qid(qid: int,
                  pool: ThreadedConnectionPool):
+        """
+        Construct ``Question`` from ``qid``.
+        """
         conn = pool.getconn()
         with conn.cursor() as curs:
             curs.execute("SELECT author, title, description, upvotes, downvotes "
@@ -81,6 +84,9 @@ class Question:
         return answers
 
     def as_dict(self):
+        """
+        Return relevant information of ``Question`` in form of dict.
+        """
         return {
             'author': self._author,
             'title': self._title,

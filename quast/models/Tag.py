@@ -4,20 +4,23 @@ from quast.models.Question import Question
 
 
 class Tag:
-    """
-    Class representing a tag.
-    """
+    """Class representing a tag."""
 
-    def __init__(self, name: str, description: str, pool: ThreadedConnectionPool):
+    def __init__(self, name: str, description: str,
+                 pool: ThreadedConnectionPool) -> (None):
         self._name = name
         self._description = description
         self._pool = pool
 
     @staticmethod
     def from_name(name: str, pool: ThreadedConnectionPool):
+        """
+        Retrieve information of tag ``name`` and return a ``Tag`` object.
+        """
         connection = pool.getconn()
         with connection.cursor() as curs:
-            curs.execute("SELECT description FROM tags WHERE name=%s", (name, ))
+            curs.execute(
+                "SELECT description FROM tags WHERE name=%s", (name, ))
             (description, ) = curs.fetchone()
         pool.putconn(connection)
         return Tag(name=name, description=description, pool=pool)
@@ -51,6 +54,10 @@ class Tag:
         return questions
 
     def as_dict(self):
+        """
+        Return all the relevant information that ``Tag`` is withholding in form
+        of dict.
+        """
         return {
             'name': self._name,
             'description': self._description,

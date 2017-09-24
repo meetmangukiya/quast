@@ -1,5 +1,5 @@
-from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
+
 
 class Answer:
     """
@@ -12,7 +12,7 @@ class Answer:
                  upvotes: int,
                  downvotes: int,
                  qid: int,
-                 pool: ThreadedConnectionPool=None):
+                 pool: ThreadedConnectionPool = None) -> (None):
         self._author = author
         self._body = body
         self._upvotes = upvotes
@@ -23,7 +23,10 @@ class Answer:
     @staticmethod
     def from_qid_author(qid: int,
                         author: str,
-                        pool: ThreadedConnectionPool=None):
+                        pool: ThreadedConnectionPool = None):
+        """
+        Retrieve data from database and construct ``Answer`` using it.
+        """
         conn = pool.getconn()
         with conn.cursor() as curs:
             curs.execute("SELECT body, upvotes, downvotes "
@@ -36,6 +39,9 @@ class Answer:
                       downvotes=downvotes, qid=qid, pool=pool)
 
     def as_dict(self):
+        """
+        Return all relevant information in form of dict.
+        """
         return {
             'author': self._author,
             'body': self._body,

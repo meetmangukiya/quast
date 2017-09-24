@@ -6,7 +6,6 @@ from flask import Flask
 from flask import jsonify
 from flask import request, session
 from flask_session import Session
-import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 
 from quast.authentication import login_required, authenticate
@@ -16,9 +15,11 @@ from quast.models.User import User
 from quast.models.Tag import Tag
 
 POOL = ThreadedConnectionPool(
-        3, 4, "dbname={} user={}".format(os.environ.get("DB_NAME"),
-                                         os.environ.get("DB_USER"))
+    3, 4, "dbname={} user={}".format(
+        os.environ.get("DB_NAME"),
+        os.environ.get("DB_USER")
     )
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "quast-on-quest")
@@ -28,6 +29,7 @@ Session(app)
 
 # GET Requests
 # ============
+
 
 @app.route("/question/<int:qid>", methods=['GET'])
 def question_info(qid):
@@ -40,6 +42,7 @@ def question_info(qid):
     data['answers'] = list(map(lambda x: x.as_dict(), answers))
     return jsonify(data)
 
+
 @app.route("/question/<int:qid>/answer/<answerer>", methods=['GET'])
 def answer_info(qid, answerer):
     """
@@ -47,6 +50,7 @@ def answer_info(qid, answerer):
     """
     answer = Answer.from_qid_author(qid, answerer, POOL)
     return jsonify(answer.as_dict())
+
 
 @app.route("/users/<username>/followers", methods=['GET'])
 def user_followers(username):
@@ -56,6 +60,7 @@ def user_followers(username):
     user = User.from_username(username, POOL)
     return jsonify(user.get_followers())
 
+
 @app.route("/user/<username>/questions", methods=['GET'])
 def user_questions(username):
     """
@@ -63,6 +68,7 @@ def user_questions(username):
     """
     user = User.from_username(username, POOL)
     return jsonify(list(map(lambda x: x.as_dict(), user.get_questions())))
+
 
 @app.route("/tag/<name>/questions", methods=['GET'])
 def tags_questions(name):
@@ -78,6 +84,7 @@ def tags_questions(name):
 # ACCOUNT & SESSION MANAGEMENT
 # ============================
 
+
 @app.route("/login", methods=["POST"])
 def login():
     """
@@ -89,6 +96,7 @@ def login():
         return jsonify({"status": "success"})
     return jsonify({"status": "failed"})
 
+
 @app.route("/logout", methods=["POST"])
 def logout():
     """
@@ -96,6 +104,7 @@ def logout():
     """
     session['logged_in'] = False
     return jsonify({"status": "success"})
+
 
 @app.route("/register", methods=["POST"])
 def register_new_user():
@@ -123,6 +132,7 @@ def register_new_user():
 
 # POST Requests
 
+
 @app.route("/question", methods=['POST'])
 @login_required
 def create_question():
@@ -137,17 +147,18 @@ def create_question():
                                pool=POOL)
     return jsonify(question.as_dict())
 
+
 @app.route("/tag", methods=['POST'])
 @login_required
 def create_tag():
     """
     Create a tag.
     """
-    author = session['username']
     name = request.json.get('name')
     description = request.json.get('description')
     tag = Tag.create(name=name, description=description, pool=POOL)
     return jsonify(tag.as_dict())
+
 
 if __name__ == '__main__':
     app.run(debug=True)

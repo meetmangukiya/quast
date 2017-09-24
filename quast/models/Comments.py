@@ -1,5 +1,6 @@
 from quast.models.User import User
 
+
 class Comment:
     """
     Class representing a comment.
@@ -9,11 +10,12 @@ class Comment:
                  author: User,
                  upvotes: int,
                  downvotes: int,
-                 body: str):
+                 body: str) -> (None):
         self._author = author
         self._upvotes = upvotes
         self._downvotes = downvotes
         self._body = body
+
 
 class QuestionComment(Comment):
     """
@@ -25,10 +27,11 @@ class QuestionComment(Comment):
                  upvotes: int,
                  downvotes: int,
                  body: str,
-                 qid: int):
+                 qid: int) -> (None):
         super().__init__(author=author, upvotes=upvotes, downvotes=downvotes,
                          body=body)
         self._qid = qid
+
 
 class AnswerComment(Comment):
     """
@@ -41,7 +44,7 @@ class AnswerComment(Comment):
                  downvotes: int,
                  body: str,
                  qid: int,
-                 aid: int):
+                 aid: int) -> (None):
         super().__init__(author=author, upvotes=upvotes, downvotes=downvotes,
                          body=body)
         self._aid = aid

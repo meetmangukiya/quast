@@ -3,16 +3,17 @@ from psycopg2.pool import ThreadedConnectionPool
 
 from quast.models.Question import Question
 
+
 class User:
     """
     Class representing a User.
     """
 
     def __init__(self,
-                 username: str=None,
-                 credits: int=0,
-                 bio: str=None,
-                 pool: ThreadedConnectionPool=None):
+                 username: str = None,
+                 credits: int = 0,
+                 bio: str = None,
+                 pool: ThreadedConnectionPool = None) -> (None):
         self._username = username
         self._credits = int(credits)
         self._bio = str(bio) if bio else ''
@@ -21,6 +22,9 @@ class User:
     @staticmethod
     def from_username(username: str,
                       pool: connection):
+        """
+        Construct ``User`` from ``username``.
+        """
         conn = pool.getconn()
         with conn.cursor() as curs:
             curs.execute("SELECT username, credits, bio "
@@ -43,6 +47,9 @@ class User:
         return followers
 
     def as_dict(self):
+        """
+        Return relevant ``User`` information in form of dict.
+        """
         return {
             'username': self._username,
             'credits': self._credits,

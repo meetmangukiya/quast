@@ -13,6 +13,7 @@ from quast.authentication import login_required, authenticate
 from quast.models.Answer import Answer
 from quast.models.Question import Question
 from quast.models.User import User
+from quast.models.Tag import Tag
 
 POOL = ThreadedConnectionPool(
         3, 4, "dbname={} user={}".format(os.environ.get("DB_NAME"),
@@ -125,6 +126,18 @@ def create_question():
     question = Question.create(author=author, title=title, body=body, tags=tags,
                                pool=POOL)
     return jsonify(question.as_dict())
+
+@app.route("/tag", methods=['POST'])
+@login_required
+def create_tag():
+    """
+    Create a tag.
+    """
+    author = session['username']
+    name = request.json.get('name')
+    description = request.json.get('description')
+    tag = Tag.create(name=name, description=description, pool=POOL)
+    return jsonify(tag.as_dict())
 
 if __name__ == '__main__':
     app.run(debug=True)

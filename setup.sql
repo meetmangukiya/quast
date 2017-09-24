@@ -3,6 +3,7 @@ CREATE TABLE users (
     username text,
     bio text DEFAULT '',
     credits int DEFAULT 0,
+    password_hash bytea NOT NULL,
     PRIMARY KEY (username)
 );
 
@@ -95,4 +96,10 @@ CREATE TABLE answer_comments (
     upvotes int DEFAULT 0,
     downvotes int DEFAULT 0,
     PRIMARY KEY (qid, answer_author, author, body)
+);
+
+-- Salts table
+CREATE TABLE salts (
+    salt bytea NOT NULL,
+    username text REFERENCES users(username)
 );

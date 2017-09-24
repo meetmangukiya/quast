@@ -1,28 +1,39 @@
 -- users table
 
-INSERT INTO users(username, bio, credits) VALUES(
+-- password is quakt
+INSERT INTO users(username, bio, password_hash, credits) VALUES(
     'meetmangukiya',
     'aka mangu(forcefully :( ); handles backend',
+    '\\x78dd6f42eda97bc075aa0ce4d5ddf1a042c246bb'::bytea,
     100
 );
 
-INSERT INTO users(username, bio, credits) VALUES(
+INSERT INTO users(username, bio, password_hash, credits) VALUES(
     'chintan.gm',
     'aka chinzzz; handles database, our rookie DBA :P',
+    '\\x78dd6f42eda97bc075aa0ce4d5ddf1a042c246bb'::bytea,
     50
 );
 
-INSERT INTO users(username, bio, credits) VALUES(
+INSERT INTO users(username, bio, password_hash, credits) VALUES(
     'raj.mm',
     'aka raj(:/); handles frontend',
+    '\\x78dd6f42eda97bc075aa0ce4d5ddf1a042c246bb'::bytea,
     1000
 );
 
-INSERT INTO users(username, bio, credits) VALUES(
+INSERT INTO users(username, bio, password_hash, credits) VALUES(
     'vignesh.vaid',
     'aka jignesh; handles <unknown>',
+    '\\x78dd6f42eda97bc075aa0ce4d5ddf1a042c246bb'::bytea,
     345
 );
+
+-- salts TABLE
+INSERT INTO salts(salt, username) VALUES('quast', 'meetmangukiya');
+INSERT INTO salts(salt, username) VALUES('quast', 'vignesh.vaid');
+INSERT INTO salts(salt, username) VALUES('quast', 'chintan.gm');
+INSERT INTO salts(salt, username) VALUES('quast', '');
 
 -- questions TABLE
 

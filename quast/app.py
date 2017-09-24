@@ -1,10 +1,15 @@
+import hashlib
 import os
+import uuid
 
 from flask import Flask
 from flask import jsonify
-from flask import request
+from flask import request, session
+from flask_session import Session
+import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 
+from quast.authentication import login_required, authenticate
 from quast.models.Answer import Answer
 from quast.models.Question import Question
 from quast.models.User import User
@@ -15,6 +20,13 @@ POOL = ThreadedConnectionPool(
     )
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET", "quast-on-quest")
+SESSION_TYPE = 'redis'
+app.config.from_object(__name__)
+Session(app)
+
+# GET Requests
+# ============
 
 @app.route("/question/<int:qid>", methods=['GET'])
 def question_info(qid):
@@ -51,6 +63,52 @@ def user_questions(username):
     user = User.from_username(username, POOL)
     return jsonify(list(map(lambda x: x.as_dict(), user.get_questions())))
 
+
+# ACCOUNT & SESSION MANAGEMENT
+# ============================
+
+@app.route("/login", methods=["POST"])
+def login():
+    """
+    Login the user.
+    """
+    if authenticate(request.json.get('username'), request.json.get('password'), POOL):
+        session["logged_in"] = True
+        session["username"] = request.json.get('username')
+        return jsonify({"status": "success"})
+    return jsonify({"status": "failed"})
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    """
+    Logs out the user.
+    """
+    session['logged_in'] = False
+    return jsonify({"status": "success"})
+
+@app.route("/register", methods=["POST"])
+def register_new_user():
+    """
+    Register a new user.
+    """
+    salt = uuid.uuid4().bytes
+    username = request.json.get('username')
+    password = request.json.get('password')
+    assert username is not None or password is not None
+
+    pwdhash = hashlib.sha1()
+    pwdhash.update(password.encode() + salt)
+    digest = pwdhash.digest()
+
+    conn = POOL.getconn()
+    with conn.cursor() as curs:
+        curs.execute("INSERT INTO users(username, password_hash) VALUES(%s, %s)",
+                     (username, digest))
+        curs.execute("INSERT INTO salts(username, salt) VALUES(%s, %s)",
+                     (username, salt))
+        conn.commit()
+    POOL.putconn(conn)
+    return jsonify({"status": "success"})
 
 if __name__ == '__main__':
     app.run(debug=True)

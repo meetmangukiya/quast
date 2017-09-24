@@ -1,6 +1,7 @@
 -- DESTROY COMPLETE DATABASE
 -- =========================
 
+DROP TABLE salts;
 DROP TABLE answer_comments;
 DROP TABLE question_comments;
 DROP TABLE question_tags;

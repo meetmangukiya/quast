@@ -33,7 +33,7 @@ INSERT INTO users(username, bio, password_hash, credits) VALUES(
 INSERT INTO salts(salt, username) VALUES('quast', 'meetmangukiya');
 INSERT INTO salts(salt, username) VALUES('quast', 'vignesh.vaid');
 INSERT INTO salts(salt, username) VALUES('quast', 'chintan.gm');
-INSERT INTO salts(salt, username) VALUES('quast', '');
+INSERT INTO salts(salt, username) VALUES('quast', 'raj.mm');
 
 -- questions TABLE
 

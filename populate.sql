@@ -66,7 +66,7 @@ INSERT INTO followers(following_to, followed_by) VALUES('meetmangukiya', 'raj.mm
 INSERT INTO followers(following_to, followed_by) VALUES('meetmangukiya', 'vignesh.vaid');
 INSERT INTO followers(following_to, followed_by) VALUES('raj.mm', 'chintan.gm');
 INSERT INTO followers(following_to, followed_by) VALUES('raj.mm', 'vignesh.vaid');
-INSERT INTO followers(following_to, followed_by) VALUES('vinesh.vaid', 'meetmangukiya');
+INSERT INTO followers(following_to, followed_by) VALUES('vignesh.vaid', 'meetmangukiya');
 INSERT INTO followers(following_to, followed_by) VALUES('chintan.gm', 'vignesh.vaid');
 
 -- tags table

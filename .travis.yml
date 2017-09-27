@@ -12,3 +12,6 @@ services:
 script:
  - ./check_script.py
  - ./check_db.sh
+
+notifications:
+ email: false

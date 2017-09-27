@@ -1,0 +1,11 @@
+/question/<int:qid>, Get question(including answers) information by qid, GET
+/question/<int:qid>/answer/<answerer>, Get answer of particular author of a given question, GET
+/user/me, Returns information of currently logged in user, GET
+/user/<username>/followers, Get username of followers of particular user, GET
+/user/<username>/questions, Get list of questions asked by a particular user, GET
+/tag/<name>/questions, Get all questions tagged by a particular tag, GET
+/login, authenticate user, set sessionid cookie to keep track, POST
+/logout, log the user out, POST
+/register, register a new user, POST
+/question, create a new question, POST
+/tag, create a new tag, POST

@@ -35,8 +35,8 @@ def check_docs():
     with open(os.path.join(abs_path, 'docs/api.csv')) as csvfile:
         reader = csv.reader(csvfile)
         documented_endpoints = []
-        for end, description in reader:
-            documented_endpoints.append(end)
+        for row in reader:
+            documented_endpoints.append(row[0])
 
     nodes = get_endpoint_nodes()
     for node in nodes:
@@ -44,8 +44,8 @@ def check_docs():
                                                x.func.value.id == 'app' and
                                                x.func.attr == 'route'),
                                     node.decorator_list))
-        if endpoint not in documented_endpoints:
-            print("Endpoint not documented: {}".format(endpoint.args[0].s))
+        if endpoint.args[0].s not in documented_endpoints:
+            print("Endpoint not documented: `{}`".format(endpoint.args[0].s))
             okay_flag = False
     return okay_flag
 

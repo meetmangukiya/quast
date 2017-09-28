@@ -7,13 +7,13 @@ class Comment:
     """
 
     def __init__(self,
-                 author: User,
+                 author: str,
                  upvotes: int,
                  downvotes: int,
                  body: str) -> (None):
         self._author = author
-        self._upvotes = upvotes
-        self._downvotes = downvotes
+        self._upvotes = int(upvotes)
+        self._downvotes = int(downvotes)
         self._body = body
 
 
@@ -23,7 +23,7 @@ class QuestionComment(Comment):
     """
 
     def __init__(self,
-                 author: User,
+                 author: str,
                  upvotes: int,
                  downvotes: int,
                  body: str,
@@ -39,13 +39,13 @@ class AnswerComment(Comment):
     """
 
     def __init__(self,
-                 author: User,
+                 author: str,
                  upvotes: int,
                  downvotes: int,
                  body: str,
                  qid: int,
-                 aid: int) -> (None):
+                 answer_author: str) -> (None):
         super().__init__(author=author, upvotes=upvotes, downvotes=downvotes,
                          body=body)
-        self._aid = aid
+        self._answer_author = answer_author
         self._qid = qid

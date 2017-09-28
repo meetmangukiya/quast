@@ -37,14 +37,14 @@ INSERT INTO salts(salt, username) VALUES('quast', 'raj.mm');
 
 -- questions TABLE
 
-INSERT INTO questions(title, description, author, upvotes, downvotes, qid) VALUES(
+INSERT INTO questions(title, description, author, upvotes, downvotes) VALUES(
     'Why should we use java for our backend?', '',
-    'meetmangukiya', 10, 2, 1
+    'meetmangukiya', 10, 2
 );
 
-INSERT INTO questions(title, description, author, upvotes, downvotes, qid) VALUES(
+INSERT INTO questions(title, description, author, upvotes, downvotes) VALUES(
     'Why is there no angular 3?', '',
-    'raj.mm', 109, 0, 2
+    'raj.mm', 109, 0
 );
 
 -- answers TABLE

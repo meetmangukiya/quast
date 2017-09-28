@@ -62,3 +62,9 @@ class Tag:
             'name': self._name,
             'description': self._description,
         }
+
+    def __eq__(self, other):
+        return (
+            self._name == other._name and
+            self._description == other._description
+        )

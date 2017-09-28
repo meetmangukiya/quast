@@ -22,8 +22,8 @@ class Question:
         self._author = author
         self._title = title
         self._body = body
-        self._upvotes = upvotes if upvotes else 0
-        self._downvotes = downvotes if downvotes else 0
+        self._upvotes = int(upvotes) if upvotes else 0
+        self._downvotes = int(downvotes) if downvotes else 0
         self._pool = pool
         self._qid = qid
         self._tags = tags
@@ -65,7 +65,8 @@ class Question:
                              (tag, qid))
             conn.commit()
         pool.putconn(conn)
-        return Question(title=title, body=body, tags=tags, pool=pool, qid=qid)
+        return Question(author=author, title=title, body=body, tags=tags,
+                        pool=pool, qid=qid)
 
     def answers(self):
         """
@@ -96,3 +97,14 @@ class Question:
             'qid': self._qid,
             'tags': self._tags
         }
+
+    def __eq__(self, other):
+        return (
+            self._author == other._author and
+            self._title == other._title and
+            self._body == other._body and
+            self._upvotes == other._upvotes and
+            self._downvotes == other._downvotes and
+            self._qid == other._qid and
+            self._tags == other._tags
+        )

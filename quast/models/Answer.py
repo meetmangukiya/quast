@@ -15,8 +15,8 @@ class Answer:
                  pool: ThreadedConnectionPool = None) -> (None):
         self._author = author
         self._body = body
-        self._upvotes = upvotes
-        self._downvotes = downvotes
+        self._upvotes = int(upvotes)
+        self._downvotes = int(downvotes)
         self._qid = qid
         self._pool = pool
 

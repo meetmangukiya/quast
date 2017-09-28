@@ -12,6 +12,7 @@ services:
 script:
  - ./check_script.py
  - ./check_db.sh
+ - python -m pytest
 
 notifications:
  email: false

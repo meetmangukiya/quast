@@ -10,7 +10,7 @@ class QuastTestCase(unittest.TestCase):
 
         # Run setup.sql
         file_path = os.path.abspath(os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), '..', 'setup.sql'))
+            os.path.dirname(os.path.abspath(__file__)), '..', 'sql/setup.sql'))
         self.conn = psycopg2.connect("user=postgres dbname=quast_test")
         self.conn.autocommit = True
         with open(file_path) as f:
@@ -20,7 +20,7 @@ class QuastTestCase(unittest.TestCase):
 
         # Run populate.sql
         file_path = os.path.abspath(os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), '..', 'populate.sql'))
+            os.path.dirname(os.path.abspath(__file__)), '..', 'sql/populate.sql'))
         with open(file_path) as f:
             with self.conn.cursor() as curs:
                 sql = f.read()

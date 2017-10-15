@@ -9,8 +9,8 @@ CREATE TABLE users (
 
 -- Store follower details
 CREATE TABLE followers (
-    followed_by text REFERENCES users(username),
-    following_to text REFERENCES users(username),
+    followed_by text REFERENCES users(username) ON DELETE CASCADE,
+    following_to text REFERENCES users(username) ON DELETE CASCADE,
     PRIMARY KEY (followed_by, following_to)
 );
 
@@ -18,7 +18,7 @@ CREATE TABLE followers (
 CREATE TABLE questions (
     title text,
     description text DEFAULT '',
-    author text REFERENCES users(username),
+    author text REFERENCES users(username) ON DELETE CASCADE,
     upvotes int DEFAULT 0,
     downvotes int DEFAULT 0,
     qid SERIAL,
@@ -28,21 +28,21 @@ CREATE TABLE questions (
 
 -- Store users that upvoted a given question
 CREATE TABLE question_upvotes (
-    qid int REFERENCES questions(qid),
-    username text REFERENCES users(username)
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
+    username text REFERENCES users(username) ON DELETE CASCADE
 );
 
 -- Store users that downvoted a question
 CREATE TABLE question_downvotes (
-    qid int REFERENCES questions(qid),
-    username text REFERENCES users(username)
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
+    username text REFERENCES users(username) ON DELETE CASCADE
 );
 
 -- Store answer details
 CREATE TABLE answers (
     body text NOT NULL,
-    author text REFERENCES users(username),
-    qid int REFERENCES questions(qid),
+    author text REFERENCES users(username) ON DELETE CASCADE,
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
     upvotes int DEFAULT 0,
     downvotes int DEFAULT 0,
     PRIMARY KEY (qid, author)
@@ -50,16 +50,16 @@ CREATE TABLE answers (
 
 -- Store users that upvoted an answer
 CREATE TABLE answer_upvotes (
-    qid int REFERENCES questions(qid),
-    answer_author text REFERENCES users(username),
-    username text REFERENCES users(username)
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
+    answer_author text REFERENCES users(username) ON DELETE CASCADE,
+    username text REFERENCES users(username) ON DELETE CASCADE
 );
 
 -- Store users that downvoted an answer
 CREATE TABLE answer_downvotes (
-    qid int REFERENCES questions(qid),
-    answer_author text REFERENCES users(username),
-    username text REFERENCES users(username)
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
+    answer_author text REFERENCES users(username) ON DELETE CASCADE,
+    username text REFERENCES users(username) ON DELETE CASCADE
 );
 
 -- Store tags and tag details
@@ -71,16 +71,16 @@ CREATE TABLE tags (
 
 -- Store tags added to given question
 CREATE TABLE question_tags (
-    qid int REFERENCES questions(qid),
-    tag text REFERENCES tags(name),
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
+    tag text REFERENCES tags(name) ON DELETE CASCADE,
     PRIMARY KEY (qid, tag)
 );
 
 -- Store comments of a given question
 CREATE TABLE question_comments (
-    qid int REFERENCES questions(qid),
+    qid int REFERENCES questions(qid) ON DELETE CASCADE,
     body text NOT NULL,
-    author text REFERENCES users(username),
+    author text REFERENCES users(username) ON DELETE CASCADE,
     upvotes int DEFAULT 0,
     downvotes int DEFAULT 0,
     PRIMARY KEY (qid, body)
@@ -90,9 +90,9 @@ CREATE TABLE question_comments (
 CREATE TABLE answer_comments (
     qid int,
     answer_author text,
-    FOREIGN  KEY(qid, answer_author) REFERENCES answers(qid, author),
+    FOREIGN  KEY(qid, answer_author) REFERENCES answers(qid, author) ON DELETE CASCADE,
     body text NOT NULL,
-    author text REFERENCES users(username),
+    author text REFERENCES users(username) ON DELETE CASCADE,
     upvotes int DEFAULT 0,
     downvotes int DEFAULT 0,
     PRIMARY KEY (qid, answer_author, author, body)
@@ -101,5 +101,5 @@ CREATE TABLE answer_comments (
 -- Salts table
 CREATE TABLE salts (
     salt bytea NOT NULL,
-    username text REFERENCES users(username)
+    username text REFERENCES users(username) ON DELETE CASCADE
 );

@@ -1,8 +1,12 @@
+import logging
 from typing import List
 
 from psycopg2.pool import ThreadedConnectionPool
 
 from quast.models.Answer import Answer
+
+
+logger = logging.getLogger(__name__)
 
 
 class Question:
@@ -108,3 +112,25 @@ class Question:
             self._qid == other._qid and
             self._tags == other._tags
         )
+
+    def __repr__(self):
+        return "<Question: (qid={})>".format(self._qid)
+
+    def delete(self):
+        """
+        Delete question using qid.
+        :returns: ``True`` if successful else ``False``.
+        """
+        conn = self._pool.getconn()
+        try:
+            with conn.cursor() as curs:
+                curs.execute("DELETE FROM questions WHERE qid=%s",
+                             (self._qid, ))
+            conn.commit()
+            return True
+        except:  # pragma: no cover, # for logging
+            logger.exception("An exception occured while deleting question"
+                             " {}".format(self))
+            return False
+        finally:
+            self._pool.putconn(conn)

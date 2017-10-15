@@ -1,4 +1,9 @@
+import logging
+
 from psycopg2.pool import ThreadedConnectionPool
+
+
+logger = logging.getLogger()
 
 
 class Answer:
@@ -49,3 +54,28 @@ class Answer:
             'downvotes': self._downvotes,
             'qid': self._qid
         }
+
+    def __repr__(self):
+        return '<Answer (qid={}, author={})>'.format(self._qid, self._author)
+
+    def delete(self):
+        """
+        Delete question ``qid``'s answer whose author is ``author``.
+        :returns: ``True`` if successful else ``False``.
+        """
+        conn = self._pool.getconn()
+
+        try:
+            with conn.cursor() as curs:
+                curs.execute("DELETE FROM answers WHERE qid=%(qid)s AND "
+                             "author=%(author)s ",
+                             {'qid': self._qid, 'author': self._author})
+            conn.commit()
+            return True
+        except:  # pragma: no cover, for logging
+            logger.exception("An exception occured while deleting answer "
+                             " {}".format(self))
+            return False
+        finally:
+            self._pool.putconn(conn)
+

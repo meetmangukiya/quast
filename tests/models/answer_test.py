@@ -22,3 +22,13 @@ class AnswerTest(QuastTestCase):
             'qid': 1
         },
         answer.as_dict())
+
+    def test_delete(self):
+        answer = Answer.from_qid_author(author='raj.mm', qid=1, pool=self.pool)
+        assert answer.delete()
+        with self.assertRaises(TypeError):
+            answer = Answer.from_qid_author(author='raj.mm', qid=1, pool=self.pool)
+
+    def test_repr(self):
+        answer = Answer.from_qid_author(author='raj.mm', qid=1, pool=self.pool)
+        self.assertEqual(repr(answer), '<Answer (qid=1, author=raj.mm)>')

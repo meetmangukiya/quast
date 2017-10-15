@@ -1,5 +1,8 @@
+from psycopg2 import ProgrammingError
+
 from quast.models.Question import Question
 from tests.Base import QuastTestCase
+
 
 class QuestionTest(QuastTestCase):
     def test_from_qid(self):
@@ -30,3 +33,13 @@ class QuestionTest(QuastTestCase):
             'tags': ['java', 'backend']
         },
         question.as_dict())
+
+    def test_delete(self):
+        question = Question.from_qid(1, self.pool)
+        assert question.delete()
+        with self.assertRaises(TypeError):
+            Question.from_qid(1, self.pool)
+
+    def test_repr(self):
+        question = Question.from_qid(1, self.pool)
+        self.assertEqual('<Question: (qid=1)>', repr(question))

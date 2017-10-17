@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>New Question | Quast</title>
+    </head>
+    <body>
+        <div>
+            <form action="/question/new" method="post">
+                <label for="title"> Title: </label>
+                <input type="text" name="title"></input><br>
+                <label for="body">Body: </label>
+                <input type="text" name="body"></input><br>
+                <label for="tags" >Tags: </label>
+                <input type="text" name="tags" id='question-form-tags' onkeyup="SearchTags()" list="tag_suggestions"></input><br>
+                <!--
+                <datalist name='tag_suggestions' id='tag_suggestions'>
+                </datalist> -->
+                <input type="submit"></input>
+            </form>
+        </div>
+
+        <p id="tags"></p>
+
+        <!-- Asynchronous searching of tags and displaying it as suggestions
+        <script>
+            function SearchTags() {
+                console.log('keydown');
+                var element = document.getElementById('question-form-tags');
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '../search/tags?name=' + element.value);
+                xhr.send();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        var datalist = document.getElementById('tag_suggestions');
+                        for(var i = 0; i < data.length; i++) {
+                            var ele = document.createElement("option");
+                            ele.value = data[i];
+                            datalist.append(ele);
+                        }
+                        var tmp = document.getElementById('tags');
+                        tmp.innerHTML = data;
+                    }
+                }
+            }
+        </script>
+        -->
+    </body>
+</html>

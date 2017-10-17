@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ question._title }} | Quast</title>
+    </head>
+
+    <body>
+        <div>
+            <div>
+                <strong><a href="">{{ question._title }}</a></strong>
+                <p>{{ question._body }}</p>
+                <strong> {{ question._author }} +{{ question._upvotes }} -{{ question._downvotes}} </strong>
+            </div>
+
+            <div>
+                <h4>Answers: </h4>
+                {% for answer in question.answers() %}
+                <div id="answer-{{ answer._author }}">
+                    <p>{{ answer._body }}</p>
+                    <strong>{{ answer._author }} +{{ answer._upvotes }} -{{ answer._downvotes }} </strong>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>

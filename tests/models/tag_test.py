@@ -33,3 +33,7 @@ class TestTag(QuastTestCase):
                           'description': 'java is one of the most popular '
                                          'programming languages.'},
                          tag.as_dict())
+
+    def test_tag_search(self):
+        tags = Tag.search('j', self.pool)
+        self.assertEqual(tags, ['java'])

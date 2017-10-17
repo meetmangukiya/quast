@@ -68,3 +68,14 @@ class Tag:
             self._name == other._name and
             self._description == other._description
         )
+
+    @staticmethod
+    def search(name, pool):
+        conn = pool.getconn()
+        results = []
+        with conn.cursor() as curs:
+            curs.execute("SELECT name FROM tags WHERE name LIKE CONCAT(%s, '%%')", (name, ))
+            for (tname, ) in curs:
+                results.append(tname)
+        pool.putconn(conn)
+        return results

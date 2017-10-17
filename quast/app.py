@@ -4,7 +4,7 @@ import uuid
 
 from flask import Flask
 from flask import jsonify
-from flask import request, session, make_response
+from flask import request, render_template, session, make_response
 from flask_session import Session
 from psycopg2.pool import ThreadedConnectionPool
 
@@ -13,6 +13,7 @@ from quast.models.Answer import Answer
 from quast.models.Question import Question
 from quast.models.User import User
 from quast.models.Tag import Tag
+from quast.utils import data_as_dict
 
 POOL = ThreadedConnectionPool(
     3, 4, "dbname={} user={}".format(
@@ -37,10 +38,14 @@ def question_info(qid):
     Return all question information.
     """
     question = Question.from_qid(qid, POOL)
-    answers = question.answers()
-    data = question.as_dict()
-    data['answers'] = list(map(lambda x: x.as_dict(), answers))
-    return jsonify(data)
+
+    # For serving data as JSON
+    #
+    # answers = question.answers()
+    # data = question.as_dict()
+    # data['answers'] = list(map(lambda x: x.as_dict(), answers))
+    # return jsonify(data)
+    return render_template('question/details.html', question=question)
 
 
 @app.route("/question/<int:qid>/answer/<answerer>", methods=['GET'])
@@ -57,9 +62,11 @@ def current_user():
     """
     Return information of logged in user.
     """
-    assert session.get('logged_in')
-    user = User.from_username(session['username'], POOL)
-    return jsonify(user.as_dict())
+    if session.get('logged_in'):
+        user = User.from_username(session['username'], POOL)
+        return jsonify(user.as_dict())
+    else:
+        return make_response(jsonify({'error': 'Not logged in'}), 401)
 
 
 @app.route("/user/<username>/followers", methods=['GET'])
@@ -91,74 +98,95 @@ def tags_questions(name):
     data['questions'] = list(map(lambda x: x.as_dict(), questions))
     return jsonify(data)
 
+
+@app.route("/search/tags", methods=['GET'])
+def search_tags():
+    """
+    Returns list of tags after searching string.
+    """
+    name = request.args.get('name')
+    return jsonify(Tag.search(name, POOL))
+
+
 # ACCOUNT & SESSION MANAGEMENT
 # ============================
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["POST", "GET"])
 def login():
     """
     Login the user.
     """
-    json = request.get_json()
-    if authenticate(json.get('username'), json.get('password'), POOL):
-        session["logged_in"] = True
-        session["username"] = json.get('username')
-        return jsonify({"status": "success"})
-    return make_response(jsonify({"status": "failed"}), 401)
+    if request.method == 'POST':
+        json = data_as_dict(request)
+
+        if authenticate(json.get('username'), json.get('password'), POOL):
+            session["logged_in"] = True
+            session["username"] = json.get('username')
+            return jsonify({"status": "success"})
+        return make_response(jsonify({"status": "failed"}), 401)
+    else:
+        return render_template('login.html')
 
 
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["POST", "GET"])
 def logout():
     """
     Logs out the user.
     """
     session['logged_in'] = False
+    session.clear()
     return jsonify({"status": "success"})
 
 
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["POST", "GET"])
 def register_new_user():
     """
     Register a new user.
     """
-    json = request.get_json()
-    username = json.get('username')
-    password = json.get('password')
-    salt = uuid.uuid4().bytes
-    assert username is not None or password is not None
+    if request.method == 'POST':
+        json = data_as_dict(request)
+        username = json.get('username')
+        password = json.get('password')
+        salt = uuid.uuid4().bytes
+        assert username is not None or password is not None
 
-    pwdhash = hashlib.sha1()
-    pwdhash.update(password.encode() + salt)
-    digest = pwdhash.digest()
+        pwdhash = hashlib.sha1()
+        pwdhash.update(password.encode() + salt)
+        digest = pwdhash.digest()
 
-    conn = POOL.getconn()
-    with conn.cursor() as curs:
-        curs.execute("INSERT INTO users(username, password_hash) VALUES(%s, %s)",
-                     (username, digest))
-        curs.execute("INSERT INTO salts(username, salt) VALUES(%s, %s)",
-                     (username, salt))
-        conn.commit()
-    POOL.putconn(conn)
-    return jsonify({"status": "success"})
+        conn = POOL.getconn()
+        with conn.cursor() as curs:
+            curs.execute("INSERT INTO users(username, password_hash) VALUES(%s, %s)",
+                         (username, digest))
+            curs.execute("INSERT INTO salts(username, salt) VALUES(%s, %s)",
+                         (username, salt))
+            conn.commit()
+        POOL.putconn(conn)
+        return jsonify({"status": "success"})
+    else:
+        return render_template('register.html')
 
 # POST Requests
 
 
-@app.route("/question", methods=['POST'])
+@app.route("/question/new", methods=['POST', 'GET'])
 @login_required
 def create_question():
     """
     Create a new question.
     """
-    author = session['username']
-    json = request.get_json()
-    title = json.get('title')
-    body = json.get('body')
-    tags = json.get('tags')
-    question = Question.create(author=author, title=title, body=body, tags=tags,
-                               pool=POOL)
-    return jsonify(question.as_dict())
+    if request.method == 'POST':
+        author = session['username']
+        json = data_as_dict(request)
+        title = json.get('title')
+        body = json.get('body')
+        tags = list(map(lambda x: x.strip(), json.get('tags').split(',')))
+        question = Question.create(author=author, title=title, body=body, tags=tags,
+                                   pool=POOL)
+        return jsonify(question.as_dict())
+    else:
+        return render_template('question/new.html')
 
 
 @app.route("/tag", methods=['POST'])

@@ -14,14 +14,14 @@ class Answer:
     def __init__(self,
                  author: str,
                  body: str,
-                 upvotes: int,
-                 downvotes: int,
                  qid: int,
+                 upvotes: int = None,
+                 downvotes: int = None,
                  pool: ThreadedConnectionPool = None) -> (None):
         self._author = author
         self._body = body
-        self._upvotes = int(upvotes)
-        self._downvotes = int(downvotes)
+        self._upvotes = int(upvotes) if upvotes else 0
+        self._downvotes = int(downvotes) if downvotes else 0
         self._qid = qid
         self._pool = pool
 
@@ -58,6 +58,15 @@ class Answer:
     def __repr__(self):
         return '<Answer (qid={}, author={})>'.format(self._qid, self._author)
 
+    def __eq__(self, other):
+        return (
+            self._body == other._body and
+            self._author == other._author and
+            self._qid == other._qid and
+            self._upvotes == other._upvotes and
+            self._downvotes == other._downvotes
+        )
+
     def delete(self):
         """
         Delete question ``qid``'s answer whose author is ``author``.
@@ -79,3 +88,12 @@ class Answer:
         finally:
             self._pool.putconn(conn)
 
+    @staticmethod
+    def create(qid, author, pool, body):
+        conn = pool.getconn()
+        with conn.cursor() as curs:
+            curs.execute("INSERT INTO answers(qid, author, body) "
+                         "VALUES(%s, %s, %s)", (qid, author, body))
+            conn.commit()
+        pool.putconn(conn)
+        return Answer(qid=qid, author=author, pool=pool, body=body)

@@ -32,3 +32,8 @@ class AnswerTest(QuastTestCase):
     def test_repr(self):
         answer = Answer.from_qid_author(author='raj.mm', qid=1, pool=self.pool)
         self.assertEqual(repr(answer), '<Answer (qid=1, author=raj.mm)>')
+
+    def test_create(self):
+        answer = Answer.create(qid=1, body='test', author='vignesh.vaid', pool=self.pool)
+        answer_fetched = Answer.from_qid_author(qid=1, author='vignesh.vaid', pool=self.pool)
+        self.assertEqual(answer_fetched, answer)

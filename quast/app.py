@@ -3,8 +3,8 @@ import os
 import uuid
 
 from flask import Flask
-from flask import jsonify
-from flask import request, render_template, session, make_response
+from flask import jsonify, url_for
+from flask import redirect, request, render_template, session, make_response
 from flask_session import Session
 from psycopg2.pool import ThreadedConnectionPool
 
@@ -32,7 +32,7 @@ Session(app)
 # ============
 
 
-@app.route("/question/<int:qid>", methods=['GET'])
+@app.route("/question/<int:qid>/", methods=['GET'])
 def question_info(qid):
     """
     Return all question information.
@@ -187,6 +187,23 @@ def create_question():
         return jsonify(question.as_dict())
     else:
         return render_template('question/new.html')
+
+
+@app.route("/question/<int:qid>/answer", methods=['POST', 'GET'])
+@login_required
+def create_answer(qid):
+    """
+    Adds an answer to a given question.
+    """
+    if request.method == 'POST':
+        author = session['username']
+        json = data_as_dict(request)
+        body = json.get('body')
+        answer = Answer.create(body=body, author=author, qid=qid, pool=POOL)
+        return redirect(url_for("/question/{}#answer-{}".format(qid, author)))
+    else:
+        return render_template('answer/new.html',
+                               question=Question.from_qid(qid, POOL))
 
 
 @app.route("/tag", methods=['POST'])

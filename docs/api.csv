@@ -7,5 +7,6 @@
 /login, authenticate user, set sessionid cookie to keep track, POST
 /logout, log the user out, POST
 /register, register a new user, POST
-/question, create a new question, POST
+/question/new, create a new question, POST
 /tag, create a new tag, POST
+/search/tags, Searches and returns a list of tags, GET

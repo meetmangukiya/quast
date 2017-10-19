@@ -1,5 +1,6 @@
-/question/<int:qid>, Get question(including answers) information by qid, GET
+/question/<int:qid>/, Get question(including answers) information by qid, GET
 /question/<int:qid>/answer/<answerer>, Get answer of particular author of a given question, GET
+/question/<int:qid>/answer, Create new answer for given question, POST
 /user/me, Returns information of currently logged in user, GET
 /user/<username>/followers, Get username of followers of particular user, GET
 /user/<username>/questions, Get list of questions asked by a particular user, GET

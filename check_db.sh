@@ -2,16 +2,23 @@
 set -e -x
 
 echo 'Creating database...'
-createdb quast
+./manage_db.sh create
 
 echo 'Setting up the database...'
-psql -U postgres -d quast -a -f sql/setup.sql -v "ON_ERROR_STOP=1"
-
-echo 'Populating the database...'
-psql -U postgres -d quast -a -f sql/populate.sql -v "ON_ERROR_STOP=1"
-
-echo 'Destructing the database...'
-psql -U postgres -d quast -a -f sql/destruct.sql -v "ON_ERROR_STOP=1"
+./manage_db.sh setup
 
 echo 'All tables: '
 psql -U postgres -d quast -c "\dt"
+
+echo 'Populating the database...'
+./manage_db.sh populate
+
+echo 'Destructing the database...'
+./manage_db.sh destruct
+
+echo 'All tables: '
+psql -U postgres -d quast -c "\dt"
+
+echo 'Dropping the database...'
+./manage_db.sh drop
+
